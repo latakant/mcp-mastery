@@ -1,0 +1,9 @@
+[2026-05-14 00:11:44] INFO  Server started on port 4000
+[2026-05-14 07:30:12] INFO  POST /api/auth/otp/verify — 200 — 31ms
+[2026-05-14 09:05:22] ERROR Shiprocket API 503 — shipment creation failed for order #ord_cm8z55
+[2026-05-14 09:05:23] INFO  Shiprocket retry 1 — success — shipment #SR-9921 created
+[2026-05-14 11:22:08] WARN  Slow query detected — GET /api/orders?userId=x — 890ms
+[2026-05-14 13:15:44] INFO  POST /api/payments/razorpay/webhook — 200 — 38ms
+[2026-05-14 15:30:01] ERROR Duplicate invoice generation blocked — order #ord_cm9x01 (idempotency key hit)
+[2026-05-14 18:00:00] INFO  BullMQ: 67 notification jobs processed
+[2026-05-14 23:59:59] INFO  Daily summary — requests: 2103 · errors: 2 · avg response: 88ms
