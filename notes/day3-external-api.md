@@ -2,6 +2,16 @@
 
 ---
 
+## Before You Build — Read the Reference First
+
+Spend 10 minutes on the official TypeScript weather server before writing a line of Day 3 code:
+`github.com/modelcontextprotocol/servers/tree/main/src/weather`
+
+It's a 4-tool external API stdio server — exactly the same shape as what you're building.
+Confirm your pattern matches theirs. It will. Then build with confidence.
+
+---
+
 ## Setup
 
 ```bash
@@ -184,6 +194,20 @@ const token = 'ghp_abc123';
 const token = process.env.GITHUB_TOKEN;
 if (!token) throw new Error('GITHUB_TOKEN not set');
 ```
+
+### Threat model checklist — run through this on every Day 3 tool before shipping
+
+**Confused deputy:** Can a caller use this tool to make requests on behalf of someone else?
+→ Your server uses one shared `GITHUB_TOKEN` from env. Never accept a token as tool input. Never forward the caller's credentials.
+
+**Token passthrough:** Could the tool leak auth credentials downstream?
+→ `GITHUB_TOKEN` goes to GitHub only. It never appears in tool output. Mask it in logs.
+
+**SSRF (Server-Side Request Forgery):** Can a caller craft input that makes your server fetch an arbitrary URL?
+→ `get_file_content` accepts `owner/repo/path` — validated by Zod strings, never a raw URL. `githubFetch` only calls `api.github.com`. No user-supplied base URL.
+
+**Scope minimization:** Does your token have more permissions than the tools need?
+→ Set your PAT to `public_repo` read-only. These 4 tools read public data — there's no reason to grant write access.
 
 ---
 

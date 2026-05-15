@@ -48,6 +48,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'word_count',
       description: 'Count words in text',
+      annotations: {
+        readOnlyHint: true,    // does not modify any state
+        idempotentHint: true,  // same input always returns same output
+      },
       inputSchema: {
         type: 'object',
         properties: { text: { type: 'string', description: 'Text to count' } },
@@ -81,6 +85,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 const transport = new StdioServerTransport();
 await server.connect(transport);
 ```
+
+---
+
+## Tool Annotations
+
+Add to every tool declaration. Three lines. Hosts use these to decide retry behavior and confirmation prompts.
+
+```typescript
+annotations: {
+  readOnlyHint: true,       // tool does NOT modify external state
+  destructiveHint: false,   // tool does NOT destroy or delete data
+  idempotentHint: true,     // calling it N times = same as calling once
+}
+```
+
+All three text analysis tools are read-only and idempotent — annotate them as such.
+A `delete_file` tool would have `destructiveHint: true` and `idempotentHint: false`.
+Interview answer: "I annotate tools so the host can make smarter decisions about when to confirm before running."
 
 ---
 
@@ -151,7 +173,7 @@ try {
 } catch (err) {
   if (err instanceof z.ZodError) {
     return {
-      content: [{ type: 'text', text: `Invalid input: ${err.errors.map(e => e.message).join(', ')}` }],
+      content: [{ type: 'text', text: `Invalid input: ${err.issues.map(e => e.message).join(', ')}` }],
       isError: true,
     };
   }

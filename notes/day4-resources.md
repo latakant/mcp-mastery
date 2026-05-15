@@ -2,6 +2,52 @@
 
 ---
 
+## All 6 Primitives (Interview Filter)
+
+The spec has 6 primitives across two sides. Most people only know 3. Knowing all 6 is a filter.
+
+**Server-exposed (what you build):**
+| Primitive | Control | Analogy |
+|---|---|---|
+| Tool | LLM decides when to call | POST — execute action |
+| Resource | Application decides when to surface | GET — read context |
+| Prompt | User decides when to invoke | Stored workflow template |
+
+**Client-exposed (what the host provides to you):**
+| Primitive | What it does |
+|---|---|
+| Sampling | Server requests an LLM completion — your server asks Claude to generate text mid-operation |
+| Elicitation | Server asks the *user* for more input mid-operation (e.g., "which branch?") |
+| Roots | Host tells your server which filesystem paths are in scope |
+
+### Elicitation in practice
+
+Without elicitation, your `get_file_content` tool fails if the caller doesn't specify a branch.
+With elicitation, the server can pause and ask: "Which branch should I use? (main, dev, release-1.2)"
+
+```typescript
+// Server sends an elicitation request to the client
+const result = await server.elicitInput({
+  message: 'Which branch should I read from?',
+  requestedSchema: {
+    type: 'object',
+    properties: {
+      branch: { type: 'string', description: 'Branch name' },
+    },
+    required: ['branch'],
+  },
+});
+
+if (result.action === 'accept') {
+  const { branch } = result.content;
+  // proceed with the user-supplied branch
+}
+```
+
+You won't implement this on Day 4. Understand the concept. The interview question is: "Name all 6 MCP primitives."
+
+---
+
 ## Tool vs Resource — The Real Distinction
 
 | | Tool | Resource |
@@ -225,6 +271,16 @@ function safePath(userInput: string): string {
   return resolved;
 }
 ```
+
+---
+
+## Security Checklist — Day 4
+
+**Path traversal:** Every dynamic resource that reads a file must run through `safePath()` before any `fs` call. No exceptions.
+
+**URI validation:** In `ReadResourceRequestSchema`, if the URI doesn't match a known pattern, return an error — don't throw. Throwing crashes the handler.
+
+**Confused deputy:** Resources should serve files from a fixed root (`process.env.LOG_DIR`, `process.env.PROJECT_ROOT`). Never accept an absolute path from the URI as-is.
 
 ---
 

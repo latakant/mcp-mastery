@@ -229,6 +229,27 @@ This is what makes HTTP+SSE multi-user safe.
 
 ---
 
+## Production Auth Note — OAuth 2.1
+
+Your Day 5 Bearer token middleware is correct for development and a controlled deployment. In a real production HTTP+SSE server, the standard is OAuth 2.1. Know the vocabulary even if you don't implement it:
+
+| Concept | What it is |
+|---|---|
+| Protected Resource Metadata | `GET /.well-known/oauth-protected-resource` — tells clients where to get tokens |
+| Authorization Server | Issues tokens (e.g., Auth0, Keycloak, your own) |
+| DCR (Dynamic Client Registration) | Clients register themselves at the auth server |
+| PKCE | Proof Key for Code Exchange — prevents auth code interception |
+| Token Introspection | Server validates a token against the auth server at request time |
+
+**Where your Day 5 server fits in this picture:**
+- Your `Bearer <AUTH_TOKEN>` check = simplified token introspection (no auth server)
+- On 401, production servers return `WWW-Authenticate: Bearer realm="mcp" error="invalid_token"`
+- The full OAuth flow lives *in front of* your MCP server, not inside it
+
+Interview answer: "Day 5 uses a static Bearer token — correct for a controlled environment. In production I'd put an OAuth 2.1 auth server in front and validate tokens via introspection. The MCP server itself stays stateless."
+
+---
+
 ## Testing Without Claude Desktop
 
 Use curl or Postman:

@@ -256,6 +256,20 @@ node dist/index.js
 
 ---
 
+## Security Checklist — Day 6
+
+**`run_tests`:** The test command comes from `process.env.TEST_COMMAND`, not from tool input. Never accept shell commands as tool arguments — that's remote code execution.
+
+**`read_logs`:** Service name maps to a fixed log directory (`LOG_DIR/service-name.log`). Run through `safePath()`. Reject `../` sequences before touching the filesystem.
+
+**`git_status`:** Runs `git` in `process.env.PROJECT_ROOT`. Never accept the project path as tool input. Working directory is fixed at server start.
+
+**`env_check`:** Returns only presence/absence of env var names — never their values. "GITHUB_TOKEN is set" is safe. Returning the actual token value is not.
+
+**Confused deputy (all tools):** The server runs with your local credentials. A caller cannot escalate beyond what your OS user can do, but don't make it easier: scope each tool to its minimum required access.
+
+---
+
 ## Deliverable Checklist
 
 - [ ] All 4 tools working
@@ -267,3 +281,4 @@ node dist/index.js
 - [ ] MCP Inspector trace screenshot
 - [ ] Own GitHub repo (not inside mcp-mastery)
 - [ ] `.env.example` with descriptions for all 3 vars
+- [ ] Security checklist above — verified for all 4 tools

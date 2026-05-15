@@ -107,6 +107,9 @@ Understand these — don't memorize. Real answers have friction and specifics. S
 ### "How do you secure a tool that accesses the filesystem?"
 > "Two things: input validation before touching the filesystem, and a path traversal guard after resolving the path. `path.resolve()` expands `../` sequences. Then I check that the resolved path starts with the allowed root. If it doesn't, I return isError before any file operation. I also validate file/directory names with a regex that rejects anything except alphanumeric and hyphens."
 
+### "Why MCP instead of a custom API or function calling?"
+> "Two reasons. First, ecosystem: MCP is the protocol both Anthropic and OpenAI adopted — VS Code Copilot, Cursor, Claude Desktop all support it. Build once, every major AI client can connect. Second, standardization: function calling is model-specific and format-specific. MCP gives you a typed schema, a wire format, error shapes, and session management out of the box. A custom API means reinventing all of that, then re-implementing it for every client."
+
 ### "What was the hardest design decision?"
 > "Tool boundary design. On Day 2 I built a text analysis server. The instinct was one `analyze_text` tool that returns everything. But if word count fails, you lose char count too. And Claude can't selectively call parts of it. Splitting into three focused tools — word_count, char_count, reading_time — means each can fail independently, Claude can chain only what it needs, and each is easier to test. That judgment shows up in every server I've built since."
 
