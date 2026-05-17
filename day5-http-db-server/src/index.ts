@@ -26,6 +26,24 @@ const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
+// Ensure schema exists on first boot (safe to re-run — IF NOT EXISTS)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS logs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    level      TEXT    NOT NULL CHECK(level IN ('info','warn','error')),
+    service    TEXT    NOT NULL,
+    message    TEXT    NOT NULL,
+    created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE TABLE IF NOT EXISTS events (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    type       TEXT    NOT NULL,
+    payload    TEXT    NOT NULL,
+    user_id    TEXT,
+    created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
+`);
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function ok(text: string) {
