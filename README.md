@@ -18,7 +18,7 @@ Learning MCP (Model Context Protocol) by building real servers, not following tu
 | 4 | Resources + Prompts | ✅ Done | `day4-resource-server/` |
 | 5 | HTTP + Database | ✅ Done | `day5-http-db-server/` |
 | 6 | Portfolio Build | ✅ Done | [local-devops-server](https://github.com/latakant/local-devops-server) |
-| 7 | Deploy + Interview Prep | ⬜ | Live URL + screen recording |
+| 7 | Deploy + Interview Prep | ✅ Done | [mcp-sqlite-server on Render](https://mcp-sqlite-server-yfg5.onrender.com/health) |
 
 ---
 
@@ -301,4 +301,26 @@ Cortex governance layer      when/whether to act (C:/luv/Cortex)
 
 ---
 
-*Started: 2026-05-14 · Day 6 complete: 2026-05-17*
+## Live Deployment
+
+**Day 5 server deployed on Render:**
+```
+https://mcp-sqlite-server-yfg5.onrender.com
+```
+
+| Endpoint | Auth required | What it does |
+|----------|--------------|-------------|
+| `GET /health` | No | Server status + session count |
+| `POST /mcp` | Yes — `Bearer mcp-demo-2026` | MCP JSON-RPC endpoint |
+| `GET /mcp` | Yes | SSE stream for server→client messages |
+
+Test it live:
+```bash
+curl https://mcp-sqlite-server-yfg5.onrender.com/health
+```
+
+> Free tier — first request after inactivity takes ~50s to wake. Subsequent requests are fast.
+
+---
+
+*Started: 2026-05-14 · Day 7 complete: 2026-05-17*

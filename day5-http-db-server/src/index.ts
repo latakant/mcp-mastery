@@ -332,6 +332,7 @@ app.get("/health", (_req: Request, res: Response) => {
     server: "sqlite-db-server",
     version: "1.0.0",
     sessions: sessions.size,
+    docs: "https://github.com/latakant/mcp-mastery/tree/master/day5-http-db-server",
   });
 });
 
